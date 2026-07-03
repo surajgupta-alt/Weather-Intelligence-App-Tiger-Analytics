@@ -1,0 +1,6 @@
+{
+  "name": "Weather Intelligence App",
+  "description": "A high-fidelity weather application with astronomical tracking, multi-hazard planning diagnostics, and customized clothing & activity recommendations powered by Gemini AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
