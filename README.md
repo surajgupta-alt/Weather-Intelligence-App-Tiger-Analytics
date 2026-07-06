@@ -126,3 +126,88 @@ npm run clean
 │       ├── Forecast7Day.tsx    # Extended day-by-day telemetry preview grid
 │       └── PlanningRecommendations.tsx # AI intelligence hub & activity checklist
 ```
+
+---
+
+## 🐙 Publishing to a GitHub Repository
+
+To persist your progress and coordinate collaboration or deployment, push this codebase to a remote GitHub repository.
+
+### Step 1: Initialize Git Local Workspace
+If you are initializing git for the first time, open your terminal and run:
+```bash
+git init
+```
+
+### Step 2: Configure Staging and Commits
+Add all source files to the local staging index (the existing `.gitignore` prevents uploading heavy cache directories like `node_modules` or local production builds):
+```bash
+git add .
+git commit -m "feat: implement frosted glass theme & full-stack weather intelligence"
+```
+
+### Step 3: Create GitHub Remote Link
+1. Navigate to [GitHub](https://github.com) and create a new repository (do not check "Initialize this repository with a README" to prevent conflict merges).
+2. Copy the remote URL (e.g., `https://github.com/your-username/aero-intel.git`).
+3. Set the remote path and rename your default branch to `main`:
+```bash
+git branch -M main
+git remote add origin https://github.com/your-username/aero-intel.git
+```
+
+### Step 4: Push to Remote Repository
+```bash
+git push -u origin main
+```
+
+---
+
+## ⚡ Deploying to Cloudflare via GitHub Integration
+
+Cloudflare provides a world-class global network. Because this is a **Full-Stack Application** (composed of a static SPA client-side frontend and a server-side Node.js proxy to securely call Gemini AI), you have two standard routes to deploy to Cloudflare:
+
+### Option A: Cloudflare Pages + Server-side Proxy (Recommended)
+You deploy the static React frontend to **Cloudflare Pages** and configure the server endpoint separately, or adapt the backend Express endpoints to run inside **Cloudflare Pages Functions** (under a `/functions/api/` folder structure) to achieve 100% serverless edge distribution.
+
+#### 1. Setup GitHub Connection in Cloudflare Dashboard
+1. Log in to the [Cloudflare Dashboard](https://dash.cloudflare.com/).
+2. Navigate to **Workers & Pages** > **Create** > **Pages** > **Connect to Git**.
+3. Authorize Cloudflare to access your GitHub account and select your newly published repository (`aero-intel`).
+
+#### 2. Configure Build & Deployment Pipeline Settings
+When setting up the project build options in Cloudflare, specify the following parameters:
+* **Project Name**: `aero-intel`
+* **Production Branch**: `main`
+* **Framework Preset**: `Vite` (or set manually)
+* **Build Command**: `npm run build`
+* **Build Output Directory**: `dist` (this matches where Vite compiles client-side code)
+
+#### 3. Inject Environment Secrets Securely
+Cloudflare Pages lets you define backend variables so they remain hidden from search engines and network inspector logs:
+1. Under your Cloudflare Pages project settings, click **Settings** > **Environment Variables**.
+2. Add your server credentials:
+   * **`GEMINI_API_KEY`**: Paste your Google Gemini API Key here.
+3. Deploy the project. Cloudflare will automatically build and publish your React front-end to a secure `.pages.dev` subdomain on every commit push.
+
+### Option B: Deploying Full-Stack with Wrangler (Express on Cloudflare Workers)
+To host the full node-style web server on Cloudflare Edge using the **Cloudflare Workers** engine, you can adapt the Express application with a handler wrapper (like `@cloudflare/kv-asset-handler` or `hono`) or run Wrangler:
+
+1. Install the Cloudflare Wrangler CLI tool:
+   ```bash
+   npm install -D wrangler
+   ```
+2. Configure a `wrangler.toml` file in your root to bind the assets:
+   ```toml
+   name = "aero-intel"
+   main = "dist/server.cjs"
+   compatibility_date = "2026-07-01"
+
+   [assets]
+   directory = "./dist"
+   binding = "ASSETS"
+   ```
+3. Run Wrangler to publish:
+   ```bash
+   npx wrangler deploy
+   ```
+
